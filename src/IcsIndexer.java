@@ -1,49 +1,96 @@
+import ir.assignments.three.frequency.Utilities;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 
-import org.jsoup.Jsoup;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.jsoup.Jsoup;
 
-public class IcsIndexer 
-{
-	public static void createIndex() throws FileNotFoundException, ParseException
+public class IcsIndexer {
+	
+	public final int corpusSize = 44546;
+	
+	
+	public static HashSet<String> excludedWords = new HashSet<String>();
+	
+	public static void populateExcludedWords()
 	{
+		excludedWords.clear();
+		excludedWords.addAll(Utilities.tokenizeFile(new File("resources.txt")));
+	}
+
+	
+	public static void createIndex() throws IOException, ParseException {
 		JSONParser parser = new JSONParser();
 		
-			JSONObject arr;
-			try {
-				arr = (JSONObject)parser.parse(new InputStreamReader(new FileInputStream("bbidyuk_html_files/html_files.json")));
-				System.out.println(arr.get("0"));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		Scanner htmlScanner = new Scanner(new File("bbidyuk_html_files/Html/access.ics.uci.educontact.html"));
-		String textFile = "";
-		while(htmlScanner.hasNextLine())
+		JSONObject arr;
+		String fileName;
+		String textFile;
+		String url;
+		
+		arr = (JSONObject)parser.parse(new InputStreamReader(new FileInputStream("bbidyuk_html_files/html_files.json")));
+		for(int i = 0; i < 44546; i++)
 		{
-			textFile += htmlScanner.nextLine();
+			//System.out.println(arr.get("0"));
+			//This section loops through all the different html files
+			//in the folder where our corpus is located
+			populateExcludedWords();
+			/*String myDirectoryPath = "bbidyuk_html_files/html/";
+			File dir = new File(myDirectoryPath);
+			File[] directoryListing = dir.listFiles();
+			if (directoryListing != null) {
+				for (File child : directoryListing) {*/
+					//Here we take the document and put it into a string to be parsed
+					fileName = arr.get(new Integer(i).toString()).toString().split("\"")[3];
+					url = arr.get(new Integer(i).toString()).toString().split("\"")[7].replace("\\", "");
+					Scanner htmlScanner = new Scanner(new File("bbidyuk_html_files/Html/"+fileName));
+					textFile = "";
+					while (htmlScanner.hasNextLine()) {
+						textFile += htmlScanner.nextLine();
+					}
+					htmlScanner.close();
+					System.out.println(textFile);
+					//This will parse the html file into just text, removing all of the tags
+					textFile = htmlToText(textFile);
+					System.out.println(textFile);
+					System.out.println(url);
+					ArrayList<String> wordsInFile = Utilities.tokenizeFile(textFile);
+					/*for(String s: wordsInFile)
+					{
+						if(excludedWords.contains(s))
+						{
+							wordsInFile.remove(s);
+						}
+					}*/
+					
+					// Remove this, this is only for testing purposes
+					
+					return;
 		}
-		htmlScanner.close();
-		System.out.println(textFile);
-		textFile = htmlToText(textFile);
-		System.out.println(textFile);
+			/*}
+		} else {
+			// Handle the case where dir is not really a directory.
+			// Checking dir.isDirectory() above would not be sufficient
+			// to avoid race conditions with another process that deletes
+			// directories.
+		}*/
 	}
-	
-	public static String htmlToText(String html)
+
+	public static String htmlToText(String html) 
 	{
 		return Jsoup.parse(html).text();
 	}
-	
-	public static void main(String[] args) throws ParseException
-	{
+
+	public static void main(String[] args) {
 		try {
 			createIndex();
 		} catch (Exception e) {
@@ -52,4 +99,3 @@ public class IcsIndexer
 		}
 	}
 }
-
