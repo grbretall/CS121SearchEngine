@@ -1,6 +1,6 @@
 package dbConnector;
 
-import helperPackage.Utilities;
+import ir.assignments.three.frequency.Utilities;
 
 import java.io.File;
 import java.io.IOException;

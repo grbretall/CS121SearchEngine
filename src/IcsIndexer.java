@@ -15,6 +15,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.jsoup.Jsoup;
 
+import dbConnector.DbConnector;
+
 public class IcsIndexer {
 	
 	public final int corpusSize = 44546;
@@ -29,7 +31,7 @@ public class IcsIndexer {
 	}
 
 	
-	public static void createIndex() throws IOException, ParseException {
+	public static void createIndex() throws IOException, ParseException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		JSONParser parser = new JSONParser();
 		
 		JSONObject arr;
@@ -73,7 +75,8 @@ public class IcsIndexer {
 					}*/
 					
 					// Remove this, this is only for testing purposes
-					
+					DbConnector dbc = new DbConnector();
+					dbc.insertTokens(wordsInFile, url);
 					return;
 		}
 			/*}
