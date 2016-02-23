@@ -65,7 +65,7 @@ public class IcsIndexer {
 
 		arr = (JSONObject) parser.parse(new InputStreamReader(
 				new FileInputStream("bbidyuk_html_files/html_files.json")));
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 6; i++) {
 			// System.out.println(arr.get("0"));
 			// This section loops through all the different html files
 			// in the folder where our corpus is located
