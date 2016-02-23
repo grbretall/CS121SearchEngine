@@ -1,6 +1,7 @@
 package searchEngineMain;
 
 import ir.assignments.three.frequency.Frequency;
+import ir.assignments.three.frequency.FrequencyMap;
 import ir.assignments.three.frequency.Utilities;
 
 import java.io.File;
@@ -30,18 +31,22 @@ public class IcsIndexer {
 	public static HashMap<WordUrlIdPair, Integer> wordUrlFrequencyMap = new HashMap<WordUrlIdPair, Integer>();
 	public static HashMap<Integer, String> wordMap = new HashMap<Integer, String>();
 	public static HashMap<Integer, String> urlMap = new HashMap<Integer, String>();
+	public static FrequencyMap wordFreqhencies = new FrequencyMap();
 
 	public static HashSet<String> excludedWords = new HashSet<String>();
 
 	public static void populateExcludedWords() {
 		excludedWords.clear();
 		excludedWords.addAll(Utilities.tokenizeFile(new File("resources.txt")));
+		wordFreqhencies.setExcludedWords(excludedWords);
 	}
 
 	public static void createIndex() throws IOException, ParseException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException, SQLException {
-		float startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis();
+		long totalTime = 0;
+		long averageTime= 0;
 		int currentWordId = 1;
 		int currentUrlId = 1;
 		
@@ -54,7 +59,7 @@ public class IcsIndexer {
 
 		arr = (JSONObject) parser.parse(new InputStreamReader(
 				new FileInputStream("bbidyuk_html_files/html_files.json")));
-		for (int i = 0; i < 30; i++) {
+		for (int i = 0; i < 10000; i++) {
 			// System.out.println(arr.get("0"));
 			// This section loops through all the different html files
 			// in the folder where our corpus is located
@@ -73,12 +78,12 @@ public class IcsIndexer {
 				textFile += htmlScanner.nextLine();
 			}
 			htmlScanner.close();
-			System.out.println(textFile);
+			//System.out.println(textFile);
 			// This will parse the html file into just text, removing all of the
 			// tags
 			textFile = htmlToText(textFile);
-			System.out.println(textFile);
-			System.out.println(url);
+			//System.out.println(textFile);
+			//System.out.println(url);
 			ArrayList<String> wordsInFile = Utilities.tokenizeFile(textFile);
 			if(!urlMap.containsValue(url))
 			{
@@ -87,6 +92,7 @@ public class IcsIndexer {
 			for (String word : wordsInFile) {
 				if (!excludedWords.contains(word) || word.equals(null)) 
 				{
+					wordFreqhencies.addToMap(word);
 					if(!wordMap.containsValue(word))
 					{
 						wordMap.put(currentWordId, word);
@@ -103,6 +109,16 @@ public class IcsIndexer {
 				currentWordId++;
 			}
 			currentUrlId++;
+			totalTime += System.currentTimeMillis()- startTime;
+			averageTime = (System.currentTimeMillis()- startTime)/currentUrlId;
+			
+			if(i%100 ==0){
+				System.out.println("That took: "+(System.currentTimeMillis() - startTime)/1000 +""
+						+ "\n   With average "+ (averageTime)
+						+ "\n     i'm at "+i);				
+			}
+
+			//System.out.println(System.currentTimeMillis());
 
 			// Remove this, this is only for testing purposes
 			/*
@@ -129,6 +145,11 @@ public class IcsIndexer {
 				key.getWord() + ", " + value));
 		out.close();
 		
+		out = new PrintStream(new FileOutputStream(
+				"Outputs/wordFrequencies.txt"));
+		System.setOut(out);
+		wordFreqhencies.getMap().forEach((key, value) -> System.out.println(key + ", " + value));
+		out.close();
 
 	}
 

@@ -16,13 +16,14 @@ import org.jsoup.Jsoup;
 
 import dbConnector.DbConnector;
 
-public class IcsIndexer {
+public class IcsIndexerWithDb {
 	
 	public final int corpusSize = 44546;
 	
 	
 	public static HashSet<String> excludedWords = new HashSet<String>();
 	
+	public static HashSet<String> seenUrls = new HashSet<String>();
 	public static void populateExcludedWords()
 	{
 		excludedWords.clear();
@@ -44,7 +45,7 @@ public class IcsIndexer {
 			//System.out.println(arr.get("0"));
 			//This section loops through all the different html files
 			//in the folder where our corpus is located
-			populateExcludedWords();
+			//populateExcludedWords();
 			/*String myDirectoryPath = "bbidyuk_html_files/html/";
 			File dir = new File(myDirectoryPath);
 			File[] directoryListing = dir.listFiles();
@@ -59,12 +60,13 @@ public class IcsIndexer {
 						textFile += htmlScanner.nextLine();
 					}
 					htmlScanner.close();
-					System.out.println(textFile);
+					//System.out.println(textFile);
 					//This will parse the html file into just text, removing all of the tags
 					textFile = htmlToText(textFile);
-					System.out.println(textFile);
+					//System.out.println(textFile);
 					System.out.println(url);
 					ArrayList<String> wordsInFile = Utilities.tokenizeFile(textFile);
+					
 					/*for(String s: wordsInFile)
 					{
 						if(excludedWords.contains(s))
@@ -75,8 +77,16 @@ public class IcsIndexer {
 					
 					// Remove this, this is only for testing purposes
 					DbConnector dbc = new DbConnector();
-					dbc.insertTokens(wordsInFile, url);
-					return;
+					seenUrls = dbc.seenURLS();
+					if(!seenUrls.contains(url)){
+						dbc.insertTokens(wordsInFile, url);
+					}
+					if(i%50 == 0){
+						System.out.println("50 more done. currently at: "+ i);
+					}
+					
+					
+					//return;
 		}
 			/*}
 		} else {

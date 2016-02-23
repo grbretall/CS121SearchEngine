@@ -6,6 +6,7 @@ import java.io.File;
 import java.sql.*;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DbConnector {
 	
@@ -49,6 +50,16 @@ public class DbConnector {
 		return 0;
 	}
 	
+	public HashSet<String> seenURLS() throws SQLException{
+		HashSet<String> returnSet = new HashSet<String>();
+		String queryString = "Select * From urls;";
+		Statement select = connection.createStatement();
+		ResultSet result = select.executeQuery(queryString);
+		while (result.next()){
+			returnSet.add(result.getString(2));	
+		}		
+		return returnSet;
+	}
 
 	/**
 	 * 
@@ -74,7 +85,7 @@ public class DbConnector {
 	@SuppressWarnings("finally")
 	public int insertWord(String word) throws SQLException{
 		String insertWordString = "INSERT INTO words(word, occurences) VALUES(?, 1) "
-				+ "ON DUPLICATE KEY UPDATE frequency = frequency + 1;";		
+				+ "ON DUPLICATE KEY UPDATE occurences = occurences + 1;";		
 		try {
 			PreparedStatement insertWord = connection.prepareStatement(insertWordString);
 			insertWord.setString(1, word);
