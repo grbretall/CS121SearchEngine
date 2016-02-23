@@ -11,10 +11,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.ObjectInputStream.GetField;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Scanner;
 
 import org.json.simple.JSONObject;
@@ -47,6 +49,16 @@ public class IcsIndexer {
 		
 	}
 
+	
+	private static int getKey(String word, HashMap<Integer, String> team1){
+	    for(Integer key : team1.keySet()){
+	        if(team1.get(key).equals(word)){
+	            return key; //return the first found
+	        }
+	    }
+	    return (Integer) null;
+	}
+
 	public static void createIndex() throws IOException, ParseException,
 			InstantiationException, IllegalAccessException,
 			ClassNotFoundException, SQLException {
@@ -65,7 +77,7 @@ public class IcsIndexer {
 
 		arr = (JSONObject) parser.parse(new InputStreamReader(
 				new FileInputStream("bbidyuk_html_files/html_files.json")));
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 5; i++) {
 			// System.out.println(arr.get("0"));
 			// This section loops through all the different html files
 			// in the folder where our corpus is located
@@ -99,17 +111,23 @@ public class IcsIndexer {
 				if (!excludedWords.contains(word) || word.equals(null)) 
 				{
 					wordFreqhencies.addToMap(word);
+					int tempIndex = 0;
 					if(!wordMap.containsValue(word))
 					{
 						wordMap.put(currentWordId, word);
+						tempIndex = currentWordId;
+					}
+					else{
+						tempIndex = getKey(word, wordMap);
 					}
 					if(!docid2termlist.containsKey(currentUrlId)){
+						
 						ArrayList<Integer> tempArray= new ArrayList<Integer>();
-						tempArray.add(currentWordId);
+						tempArray.add(tempIndex);
 						docid2termlist.put(currentUrlId, tempArray);
 					}
 					else{
-						docid2termlist.get(currentUrlId).add(currentWordId);
+						docid2termlist.get(currentUrlId).add(tempIndex);
 					}
 					
 				  //WordUrlIdPair currentWordUrlPair = new WordUrlIdPair(word, url);
