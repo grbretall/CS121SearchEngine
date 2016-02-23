@@ -38,8 +38,6 @@ public class IcsIndexer {
 		String fileName;
 		String textFile;
 		String url;
-		DbConnector db = new DbConnector();
-		
 		
 		arr = (JSONObject)parser.parse(new InputStreamReader(new FileInputStream("bbidyuk_html_files/html_files.json")));
 		for(int i = 0; i < 44546; i++)
@@ -62,18 +60,12 @@ public class IcsIndexer {
 						textFile += htmlScanner.nextLine();
 					}
 					htmlScanner.close();
-					//System.out.println(textFile);
+					System.out.println(textFile);
 					//This will parse the html file into just text, removing all of the tags
 					textFile = htmlToText(textFile);
+					System.out.println(textFile);
+					System.out.println(url);
 					ArrayList<String> wordsInFile = Utilities.tokenizeFile(textFile);
-					if(i%50 == 0){
-						System.out.println("File Text= "+textFile);
-						System.out.println("url= "+url);
-					}
-					
-					db.insertTokens(wordsInFile, url);
-					
-					
 					/*for(String s: wordsInFile)
 					{
 						if(excludedWords.contains(s))
@@ -83,10 +75,10 @@ public class IcsIndexer {
 					}*/
 					
 					// Remove this, this is only for testing purposes
-					
-					//return;
+					DbConnector dbc = new DbConnector();
+					dbc.insertTokens(wordsInFile, url);
+					return;
 		}
-		db.dbConnectorCloser();
 			/*}
 		} else {
 			// Handle the case where dir is not really a directory.
@@ -103,10 +95,7 @@ public class IcsIndexer {
 
 	public static void main(String[] args) {
 		try {
-			long startTime = System.currentTimeMillis();
 			createIndex();
-			long endTime = System.currentTimeMillis();
-			System.out.println("That took " + (endTime - startTime) + " milseconds");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
