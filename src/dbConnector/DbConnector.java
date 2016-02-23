@@ -73,7 +73,8 @@ public class DbConnector {
 	 * */
 	@SuppressWarnings("finally")
 	public int insertWord(String word) throws SQLException{
-		String insertWordString = "INSERT INTO words(word) VALUES(?);";		
+		String insertWordString = "INSERT INTO words(word, occurences) VALUES(?, 1) "
+				+ "ON DUPLICATE KEY UPDATE frequency = frequency + 1;";		
 		try {
 			PreparedStatement insertWord = connection.prepareStatement(insertWordString);
 			insertWord.setString(1, word);
