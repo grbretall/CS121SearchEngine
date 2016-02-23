@@ -53,7 +53,7 @@ public class Utilities {
             temp = temp.toLowerCase();
             //does the following --> "can't the dog come in" to ["cant", "the", "dog", "come", "in"]
             for (String splitStr: temp.split("[^\\w']+")){
-               //splitStr = splitStr.replaceAll("'","");
+               splitStr = splitStr.replaceAll("'","");
                if (!splitStr.equals(""))
                   returnList.add(splitStr);
             }
