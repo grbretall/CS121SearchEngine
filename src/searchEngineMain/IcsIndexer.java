@@ -28,7 +28,8 @@ public class IcsIndexer {
 
 	public final int corpusSize = 44546;
 
-	public static HashMap<WordUrlIdPair, Integer> wordUrlFrequencyMap = new HashMap<WordUrlIdPair, Integer>();
+//	public static HashMap<WordUrlIdPair, Integer> wordUrlFrequencyMap = new HashMap<WordUrlIdPair, Integer>();
+	public static HashMap<Integer, ArrayList<Integer>> docid2termlist  = new HashMap<Integer, ArrayList<Integer>>();
 	public static HashMap<Integer, String> wordMap = new HashMap<Integer, String>();
 	public static HashMap<Integer, String> urlMap = new HashMap<Integer, String>();
 	public static FrequencyMap wordFreqhencies = new FrequencyMap();
@@ -39,6 +40,11 @@ public class IcsIndexer {
 		excludedWords.clear();
 		excludedWords.addAll(Utilities.tokenizeFile(new File("resources.txt")));
 		wordFreqhencies.setExcludedWords(excludedWords);
+	}
+	
+	public void initializeData(){
+		//ArrayList<String> x = Utilities.tokenizeFile(new File("resources.txt"));
+		
 	}
 
 	public static void createIndex() throws IOException, ParseException,
@@ -59,7 +65,7 @@ public class IcsIndexer {
 
 		arr = (JSONObject) parser.parse(new InputStreamReader(
 				new FileInputStream("bbidyuk_html_files/html_files.json")));
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < 5; i++) {
 			// System.out.println(arr.get("0"));
 			// This section loops through all the different html files
 			// in the folder where our corpus is located
@@ -97,14 +103,23 @@ public class IcsIndexer {
 					{
 						wordMap.put(currentWordId, word);
 					}
-					WordUrlIdPair currentWordUrlPair = new WordUrlIdPair(word, url);
-					if (!wordUrlFrequencyMap.containsKey(currentWordUrlPair)) {
-						wordUrlFrequencyMap.put(currentWordUrlPair, 1);
-					} else {
-						wordUrlFrequencyMap
-								.put(currentWordUrlPair, wordUrlFrequencyMap
-										.get(currentWordUrlPair) + 1);
+					if(!docid2termlist.containsKey(currentUrlId)){
+						ArrayList<Integer> tempArray= new ArrayList<Integer>();
+						tempArray.add(currentWordId);
+						docid2termlist.put(currentUrlId, tempArray);
 					}
+					else{
+						docid2termlist.get(currentUrlId).add(currentWordId);
+					}
+					
+				  //WordUrlIdPair currentWordUrlPair = new WordUrlIdPair(word, url);
+//					if (!wordUrlFrequencyMap.containsKey(currentWordUrlPair)) {
+//						wordUrlFrequencyMap.put(currentWordUrlPair, 1);
+//					} else {
+//						wordUrlFrequencyMap
+//								.put(currentWordUrlPair, wordUrlFrequencyMap
+//										.get(currentWordUrlPair) + 1);
+//					}
 				}
 				currentWordId++;
 			}
@@ -138,11 +153,17 @@ public class IcsIndexer {
 		System.setOut(out);
 		urlMap.forEach((key, value) -> System.out.println(key + ", " + value));
 		out.close();
+//		out = new PrintStream(new FileOutputStream(
+//				"Outputs/UrlWordFrequencies.txt"));
+//		System.setOut(out);
+//		wordUrlFrequencyMap.forEach((key, value) -> System.out.println(key.getUrl() + ", " + 
+//				key.getWord() + ", " + value));
+//		out.close();
+		//docid2termlist
 		out = new PrintStream(new FileOutputStream(
-				"Outputs/UrlWordFrequencies.txt"));
+				"Outputs/docid2termlist.txt"));
 		System.setOut(out);
-		wordUrlFrequencyMap.forEach((key, value) -> System.out.println(key.getUrl() + ", " + 
-				key.getWord() + ", " + value));
+		docid2termlist.forEach((key, value) -> System.out.println(key + ", " + value));
 		out.close();
 		
 		out = new PrintStream(new FileOutputStream(
