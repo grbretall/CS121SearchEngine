@@ -43,15 +43,13 @@ public class indexRetriever
         		}
         		double occurrences = Collections.frequency(tempList, item);
         		double tf = occurrences/tempList.size();
-        		double wtf = (1+Math.log10(tf));
-        		System.out.println("Corpus: " + (docIDtoTerm.size()/docCounter));
-        		double tfidf = wtf * Math.log10(docIDtoTerm.size()/docCounter);
-        		System.out.println("DOCUMENT: " + key + ": ITEM - " + IDToTerm.get(item) + ", TFIDF - " + tfidf);
+        		//System.out.println("tf: " + (tf));
+        		double wtf = (1+Math.log10(1+tf));
+        		//System.out.println("wtf: " + (wtf));
+        		double tfidf = wtf * Math.log10(Math.abs(docIDtoTerm.size())/docCounter);
+        		System.out.println("DOCUMENT " + key + ": ITEM id ~ " + item + ", TFIDF ~ " + tfidf);
         	}
-        		
-        	
         	int total = docIDtoTerm.get(key).size();
-        	//System.out.println(total);
         }
     }  
 	
@@ -63,9 +61,6 @@ public class indexRetriever
 		while (result.next()){
 			returnMap.put(result.getString(2), result.getInt(1));
 		}
-		
-		System.out.println(returnMap);
-		
 		return returnMap;
 		
 	}
@@ -77,10 +72,7 @@ public class indexRetriever
 		ResultSet result = select.executeQuery(query);
 		while (result.next()){
 			returnMap.put(result.getInt(1),result.getString(2));
-		}
-		
-		System.out.println(returnMap);
-		
+		}		
 		return returnMap;
 		
 	}
@@ -104,9 +96,7 @@ public class indexRetriever
 			
 			returnMap.put(Integer.parseInt(result.getString(1)), intList);
 		}
-		
-		System.out.println(returnMap.values());
-		System.out.println(returnMap);
+
 		
 		return returnMap;
 	}
