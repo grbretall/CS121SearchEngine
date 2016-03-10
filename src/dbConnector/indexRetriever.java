@@ -54,6 +54,11 @@ public class indexRetriever
         	int total = docIDtoTerm.get(key).size();
         }
     }  
+    
+    public double milesTFIDFCalculator(Integer termF, Integer docFreq, Integer corpusSize){
+    	double tfidf = (1+Math.log10(termF)) * Math.log10(Math.abs(corpusSize/docFreq));
+    	return tfidf;
+    }
 	
 	public HashMap<String,Integer> termToID() throws SQLException {
 		HashMap<String, Integer> returnMap = new HashMap<String, Integer>();
