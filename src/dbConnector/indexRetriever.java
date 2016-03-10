@@ -31,9 +31,9 @@ public class indexRetriever
     private List<double[]> tfidfDocsVector = new ArrayList<double[]>();
 
     public void tfIdfCalculator(HashMap<Integer, ArrayList<Integer>> docIDtoTerm, HashMap<Integer, String> IDToTerm) {
-        for (Integer key : docIDtoTerm.keySet()){
-        	ArrayList<Integer> tempList = docIDtoTerm.get(key);
-        	for (Integer item : tempList){
+    	for (Integer key : docIDtoTerm.keySet()){
+        	ArrayList<Integer> termsInDocList = docIDtoTerm.get(key);
+        	for (Integer item : termsInDocList){
         		String word = IDToTerm.get(item);
         		double docCounter = 0;
         		for (Integer key2 : docIDtoTerm.keySet()){
@@ -41,12 +41,14 @@ public class indexRetriever
         				docCounter += 1;
         			}
         		}
-        		double occurrences = Collections.frequency(tempList, item);
-        		double tf = occurrences/tempList.size();
-        		//System.out.println("tf: " + (tf));
-        		double wtf = (1+Math.log10(1+tf));
-        		//System.out.println("wtf: " + (wtf));
-        		double tfidf = wtf * Math.log10(Math.abs(docIDtoTerm.size())/docCounter);
+        		
+        		double occurrences = Collections.frequency(termsInDocList, item);
+        		double tf = occurrences;
+        		
+        		//System.out.println(item+" tf: " + (tf));
+        		double wtf = (1+Math.log10(tf));
+        		double idf = Math.log10(Math.abs(docIDtoTerm.size())/docCounter);
+        		double tfidf = wtf * idf;
         		System.out.println("DOCUMENT " + key + ": ITEM id ~ " + item + ", TFIDF ~ " + tfidf);
         	}
         	int total = docIDtoTerm.get(key).size();
