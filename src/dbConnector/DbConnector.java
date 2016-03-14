@@ -1,3 +1,4 @@
+//Project by Gregory Bretall (21284961), Miles Bonner (82127215), Zach Anderson (22109634), and Lauren Dimailig (73117811)
 package dbConnector;
 
 import ir.assignments.three.frequency.Utilities;
@@ -76,7 +77,6 @@ public class DbConnector {
 		}
 		return 0;
 	}
-<<<<<<< Updated upstream
 
 	/**
 	 * 
@@ -84,12 +84,6 @@ public class DbConnector {
 	 * @return
 	 * */
 	@SuppressWarnings("finally")
-=======
-	
-	
-	
-	//@SuppressWarnings("finally")
->>>>>>> Stashed changes
 	public int insertWord(String word) throws SQLException{
 		String insertWordString = "INSERT INTO words(word, occurences) VALUES(?, 1) "
 				+ "ON DUPLICATE KEY UPDATE occurences = occurences + 1;";		
